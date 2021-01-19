@@ -32,14 +32,6 @@ class ViewControl extends Component {
             <Nav className='mr-auto'>
               <CustomDropdown />
             </Nav>
-            <Form inline>
-              <FormControl
-                type='text'
-                placeholder='Search'
-                className='mr-sm-2'
-              />
-              <Button variant='outline-success'>Search</Button>
-            </Form>
           </Navbar.Collapse>
         </Navbar>
       </div>
