@@ -28,11 +28,9 @@ class ViewControl extends Component {
     return (
       <div>
         <Navbar bg='light' expand='lg'>
-          <Navbar.Collapse id='basic-navbar-nav'>
-            <Nav className='mr-auto'>
-              <CustomDropdown />
-            </Nav>
-          </Navbar.Collapse>
+          <Nav className='mr-auto'>
+            <CustomDropdown />
+          </Nav>
         </Navbar>
       </div>
     );

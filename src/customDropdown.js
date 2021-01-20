@@ -19,18 +19,18 @@ const mapStateToProps = (state) => {
 // Dropdown needs access to the DOM node in order to position the Menu
 const CustomToggle = React.forwardRef(({ children, onClick, setValue, value }, ref) => {
   return (
-  <FormControl
-  autoFocus
-  className='mx-3 my-2 w-auto'
-  placeholder='Filter by Breed'
-  onChange={(e) => setValue(e.target.value)}
-  onClick={(e) => {
+    <FormControl
+      autoFocus
+      className='mx-3 my-2 w-auto'
+      placeholder='Filter by Breed'
+      onChange={(e) => setValue(e.target.value)}
+      onClick={(e) => {
         e.preventDefault();
         onClick(e);
       }}
-  value={value}
-  ></FormControl>
-);
+      value={value}
+    ></FormControl>
+  );
 })
 
 // forwardRef again here!
@@ -42,7 +42,7 @@ const CustomMenu = React.forwardRef(
       (child) =>
         !value || child.props.children.toLowerCase().includes(value.toLowerCase())
     )
-    if (optionList.length == 0){
+    if (optionList.length == 0) {
       optionList.push(<Dropdown.Item>No Results </Dropdown.Item>)
     }
     return (
@@ -61,58 +61,57 @@ const CustomMenu = React.forwardRef(
 );
 
 const CustomDropdown = (props) => {
-    const [value, setValue] = useState("")
-    let mapIndexToBreedData = new Map();
-    const onSelect = (eventKey) => {
-      console.log(eventKey);
-      console.log(mapIndexToBreedData);
-      let breedData = mapIndexToBreedData.get(eventKey);
-      let api = `https://dog.ceo/api/breed/${breedData.breed}/${
-        breedData.subBreed === null ? "" : `${breedData.subBreed}/`
+  const [value, setValue] = useState("")
+  let mapIndexToBreedData = new Map();
+  const onSelect = (eventKey) => {
+    console.log(eventKey);
+    console.log(mapIndexToBreedData);
+    let breedData = mapIndexToBreedData.get(eventKey);
+    let api = `https://dog.ceo/api/breed/${breedData.breed}/${breedData.subBreed === null ? "" : `${breedData.subBreed}/`
       }images`;
-      console.log(api);
-      fetch(api)
-        .then((response) => response.json())
-        .then((result) =>
-          store.dispatch({
-            type: SET_URL_LIST,
-            urlList: result.message,
-          })
-        );
-    };
+    console.log(api);
+    fetch(api)
+      .then((response) => response.json())
+      .then((result) =>
+        store.dispatch({
+          type: SET_URL_LIST,
+          urlList: result.message,
+        })
+      );
+  };
 
-    let itemList = [];
-    let i = 1;
-    for (const breed in props.breedData) {
-      if (props.breedData[breed].length === 0) {
-        mapIndexToBreedData.set(`${i}`, { breed: breed, subBreed: null });
+  let itemList = [];
+  let i = 1;
+  for (const breed in props.breedData) {
+    if (props.breedData[breed].length === 0) {
+      mapIndexToBreedData.set(`${i}`, { breed: breed, subBreed: null });
+      itemList.push(
+        <Dropdown.Item eventKey={i} onSelect={onSelect} onClick={() => { setValue(`${breed}`.CapitalizeEachWord()) }}>
+          {`${breed}`.CapitalizeEachWord()}
+        </Dropdown.Item>
+      );
+      i++;
+    } else {
+      props.breedData[breed].forEach((subBreed) => {
+        mapIndexToBreedData.set(`${i}`, { breed: breed, subBreed: subBreed });
         itemList.push(
-          <Dropdown.Item eventKey={i} onSelect={onSelect} onClick={()=>{setValue(`${breed}`.CapitalizeEachWord())}}>
-            {`${breed}`.CapitalizeEachWord()}
+          <Dropdown.Item eventKey={i} onSelect={onSelect} onClick={() => { setValue(`${subBreed} ${breed}`.CapitalizeEachWord()) }}>
+            {`${subBreed} ${breed}`.CapitalizeEachWord()}
           </Dropdown.Item>
         );
         i++;
-      } else {
-         props.breedData[breed].forEach((subBreed) => {
-          mapIndexToBreedData.set(`${i}`, { breed: breed, subBreed: subBreed });
-          itemList.push(
-            <Dropdown.Item eventKey={i} onSelect={onSelect} onClick={()=>{setValue(`${subBreed} ${breed}`.CapitalizeEachWord())}}>
-              {`${subBreed} ${breed}`.CapitalizeEachWord()}
-            </Dropdown.Item>
-          );
-          i++;
-        });
-      }
+      });
     }
-    return (
-      <Dropdown>
-        <Dropdown.Toggle as={CustomToggle} setValue={setValue} value={value} id='dropdown-custom-components'>
-          Select Breed
+  }
+  return (
+    <Dropdown>
+      <Dropdown.Toggle as={CustomToggle} setValue={setValue} value={value} id='dropdown-custom-components'>
+        Select Breed
         </Dropdown.Toggle>
 
-        <Dropdown.Menu as={CustomMenu} value={value}>{itemList}</Dropdown.Menu>
-      </Dropdown>
-    );
+      <Dropdown.Menu as={CustomMenu} value={value}>{itemList}</Dropdown.Menu>
+    </Dropdown>
+  );
 }
 
 export default connect(mapStateToProps, null)(CustomDropdown);
