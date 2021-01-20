@@ -1,5 +1,5 @@
 import {SET_URL_LIST, SET_BREED_DATA} from "./actionTypes"
-import {Set} from "immutable"
+import {Set, Map} from "immutable"
 let initialState = {urlList:Set([]), breedData:{}}
 
 export default function Reducer(state = initialState, action){

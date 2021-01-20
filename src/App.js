@@ -8,7 +8,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <ViewControl/>
-        <Viewer /> 
+        <Viewer desiredWidth={window.innerWidth*0.95} /> 
       </header>
     </div>
   );
