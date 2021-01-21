@@ -4,6 +4,8 @@ import { Dropdown, FormControl } from "react-bootstrap";
 import { connect } from "react-redux";
 import store from "./store";
 import { SET_URL_LIST } from "./actionTypes";
+import { setRowMap } from "./viewer";
+import { Map as iMap } from "immutable"
 
 String.prototype.CapitalizeEachWord = function () {
   let text = this.toLowerCase()
@@ -64,8 +66,7 @@ const CustomDropdown = (props) => {
   const [value, setValue] = useState("")
   let mapIndexToBreedData = new Map();
   const onSelect = (eventKey) => {
-    console.log(eventKey);
-    console.log(mapIndexToBreedData);
+    setRowMap(iMap())
     let breedData = mapIndexToBreedData.get(eventKey);
     let api = `https://dog.ceo/api/breed/${breedData.breed}/${breedData.subBreed === null ? "" : `${breedData.subBreed}/`
       }images`;
@@ -81,25 +82,35 @@ const CustomDropdown = (props) => {
   };
 
   let itemList = [];
-  let i = 1;
   for (const breed in props.breedData) {
     if (props.breedData[breed].length === 0) {
-      mapIndexToBreedData.set(`${i}`, { breed: breed, subBreed: null });
+      let eventKey = `${breed}`.CapitalizeEachWord()
+      mapIndexToBreedData.set(eventKey, { breed: breed, subBreed: null });
       itemList.push(
-        <Dropdown.Item eventKey={i} onSelect={onSelect} onClick={() => { setValue(`${breed}`.CapitalizeEachWord()) }}>
-          {`${breed}`.CapitalizeEachWord()}
+        <Dropdown.Item key={eventKey} eventKey={eventKey} onSelect={onSelect} onClick={() => { setValue(eventKey) }}>
+          {eventKey}
         </Dropdown.Item>
       );
-      i++;
     } else {
       props.breedData[breed].forEach((subBreed) => {
-        mapIndexToBreedData.set(`${i}`, { breed: breed, subBreed: subBreed });
+        let eventKey = `${breed}`.CapitalizeEachWord()
+        if (!mapIndexToBreedData.has(eventKey)) {
+          mapIndexToBreedData.set(eventKey, { breed: breed, subBreed: null });
+          itemList.push(
+            <Dropdown.Item key={eventKey} eventKey={eventKey} onSelect={onSelect} onClick={() => { setValue(eventKey) }}>
+              {eventKey}
+            </Dropdown.Item>
+          );
+        }
+
+        eventKey = `${subBreed} ${breed}`.CapitalizeEachWord()
+        mapIndexToBreedData.set(eventKey, { breed: breed, subBreed: subBreed });
         itemList.push(
-          <Dropdown.Item eventKey={i} onSelect={onSelect} onClick={() => { setValue(`${subBreed} ${breed}`.CapitalizeEachWord()) }}>
-            {`${subBreed} ${breed}`.CapitalizeEachWord()}
+          <Dropdown.Item key={eventKey} eventKey={eventKey} onSelect={onSelect} onClick={() => { setValue(eventKey) }}>
+            {eventKey}
           </Dropdown.Item>
         );
-        i++;
+
       });
     }
   }

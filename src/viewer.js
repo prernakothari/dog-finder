@@ -3,23 +3,26 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { Map, Set } from "immutable";
 import store from "./store";
-import { SET_URL_LIST } from "./actionTypes";
+import { SET_URL_LIST, SET_ROW_MAP } from "./actionTypes";
 import "./viewer.css"
+
 const mapStateToProps = (state) => {
-  return { urlList: state.urlList.toJS() };
+  return { urlList: state.urlList.toJS(), rowMap: state.rowMap };
 };
 
-class Viewer extends Component {
-  constructor(props) {
-    super(props)
-    let desiredWidth = window.innerWidth * 0.95
-    this.state = {
-      rowMap: Map(),
-      desiredWidth: desiredWidth,
-      maxNumberOfImagesInRow: Math.min(Math.floor(desiredWidth / 200), 5)
-    }
-  }
+const getDesiredWidth = () => {
+  return window.innerWidth * 0.95
+}
 
+const getMaxNumberOfImagesInRow = () => {
+  return Math.min(Math.floor(getDesiredWidth() / 200), 5)
+}
+
+export const setRowMap = (rowMap) => {
+  store.dispatch({ type: SET_ROW_MAP, rowMap: rowMap })
+}
+
+class Viewer extends Component {
   reset = () => {
     this.setState({ rowMap: Map() })
   }
@@ -27,24 +30,21 @@ class Viewer extends Component {
   resize = (e) => {
     e.preventDefault();
     let desiredWidth = window.innerWidth * 0.95
-    let oldRowMap = this.state.rowMap
-    let state = {
-      rowMap: Map(),
-      desiredWidth: desiredWidth,
-      maxNumberOfImagesInRow: Math.min(Math.floor(desiredWidth / 200), 5)
-    }
+    let oldRowMap = this.props.rowMap
+    let rowMap = Map()
     for (let i = 0; i < this.props.urlList.length; i++) {
-      let rowIndex = Math.floor(i / state.maxNumberOfImagesInRow);
+      let maxNumberOfImagesInRow = getMaxNumberOfImagesInRow()
+      let rowIndex = Math.floor(i / maxNumberOfImagesInRow);
 
-      let numberOfImagesInRow = state.maxNumberOfImagesInRow
-      if (rowIndex === Math.floor((this.props.urlList.length - 1) / state.maxNumberOfImagesInRow)) {
-        numberOfImagesInRow = this.props.urlList.length - state.maxNumberOfImagesInRow * rowIndex
+      let numberOfImagesInRow = maxNumberOfImagesInRow;
+      if (rowIndex === Math.floor((this.props.urlList.length - 1) / maxNumberOfImagesInRow)) {
+        numberOfImagesInRow = this.props.urlList.length - maxNumberOfImagesInRow * rowIndex
       }
 
-      state = this.addWidthToMap(document.getElementById(`image${i}`), rowIndex, i, oldRowMap.getIn([rowIndex, "height"]), numberOfImagesInRow, state)
+      rowMap = this.addWidthToMap(document.getElementById(`image${i}`), rowIndex.toString(), i, oldRowMap.getIn([rowIndex, "height"]), numberOfImagesInRow, rowMap)
     }
 
-    this.setState({ ...state })
+    setRowMap(rowMap);
   }
 
   componentDidMount() {
@@ -61,9 +61,8 @@ class Viewer extends Component {
   }
 
 
-  addWidthToMap = (imageElement, rowIndex, index, height, numberOfImagesInRow, stateRef = undefined) => {
-    let state = stateRef ? stateRef : this.state
-    let rowMap = state.rowMap
+  addWidthToMap = (imageElement, rowIndex, index, height, numberOfImagesInRow, rowMapRef = undefined) => {
+    let rowMap = rowMapRef ? rowMapRef : this.props.rowMap
     if (!rowMap.has(rowIndex)) {
       rowMap = rowMap.set(rowIndex, { width: 0 })
     }
@@ -74,18 +73,14 @@ class Viewer extends Component {
       rowMap = rowMap.setIn([rowIndex, "indicesLoaded"], indicesLoaded.add(index))
 
       if (rowMap.getIn([rowIndex, "indicesLoaded"]).size === numberOfImagesInRow) {
-        let newHeight = imageElement.clientHeight / window.innerWidth * 100 * (state.desiredWidth / rowMap.getIn([rowIndex, "width"]))
+        let newHeight = imageElement.clientHeight / window.innerWidth * 100 * (getDesiredWidth() / rowMap.getIn([rowIndex, "width"]))
         rowMap = rowMap.setIn([rowIndex, "height"], newHeight)
       }
-      if (stateRef === undefined)
-        this.setState({ rowMap: rowMap })
+      if (rowMapRef === undefined)
+        setRowMap(rowMap);
       else
-        return { ...state, rowMap: rowMap }
+        return rowMap
     }
-  }
-
-  componentDidUpdate() {
-
   }
 
   render() {
@@ -93,19 +88,19 @@ class Viewer extends Component {
 
 
     for (let i = 0; i < this.props.urlList.length; i++) {
-      let rowIndex = Math.floor(i / this.state.maxNumberOfImagesInRow);
+      let rowIndex = Math.floor(i / getMaxNumberOfImagesInRow());
       let height = 30;
 
-      let numberOfImagesInRow = this.state.maxNumberOfImagesInRow
-      if (rowIndex === Math.floor((this.props.urlList.length - 1) / this.state.maxNumberOfImagesInRow)) {
-        numberOfImagesInRow = this.props.urlList.length - this.state.maxNumberOfImagesInRow * rowIndex
+      let maxNumberOfImagesInRow = getMaxNumberOfImagesInRow()
+      let numberOfImagesInRow = maxNumberOfImagesInRow
+      if (rowIndex === Math.floor((this.props.urlList.length - 1) / maxNumberOfImagesInRow)) {
+        numberOfImagesInRow = this.props.urlList.length - maxNumberOfImagesInRow * rowIndex
       }
 
-      if (this.state.rowMap.hasIn([rowIndex, "height"])) {
-        height = this.state.rowMap.getIn([rowIndex, "height"])
+      if (this.props.rowMap.hasIn([rowIndex.toString(), "height"])) {
+        height = this.props.rowMap.getIn([rowIndex.toString(), "height"])
       }
-
-      imageList.push(<img id={`image${i}`} src={this.props.urlList[i]} style={{ height: `${height}vw`, padding: "0.2%" }} onLoad={(e) => this.addWidthToMap(e.target, rowIndex, i, height, numberOfImagesInRow)}
+      imageList.push(<img key={`image${i}`} id={`image${i}`} src={this.props.urlList[i]} style={{ height: `${height}vw`, padding: "0.2%" }} onLoad={(e) => this.addWidthToMap(e.target, rowIndex.toString(), i, height, numberOfImagesInRow)}
       />)
     }
 
