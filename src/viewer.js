@@ -3,11 +3,16 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { Map, Set } from "immutable";
 import store from "./store";
-import { SET_URL_LIST, SET_ROW_MAP } from "./actionTypes";
+import { SET_ROW_MAP } from "./actionTypes";
 import "./viewer.css"
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { getMoreRandomImages, getRandomImages } from "./apiHelper";
 
 const mapStateToProps = (state) => {
-  return { urlList: state.urlList.toJS(), rowMap: state.rowMap };
+  return {
+    urlList: state.urlList.toJS(), rowMap: state.rowMap, currentBreed: state.activeBreedData.breed, currentSubBreed: state.activeBreedData.subBreed,
+    hasMoreImages: state.hasMoreImages, needsFormatting: state.needsFormatting
+  };
 };
 
 const getDesiredWidth = () => {
@@ -27,9 +32,8 @@ class Viewer extends Component {
     this.setState({ rowMap: Map() })
   }
 
-  resize = (e) => {
-    e.preventDefault();
-    let desiredWidth = window.innerWidth * 0.95
+  reformat = (e, incremental = false) => {
+    e.preventDefault()
     let oldRowMap = this.props.rowMap
     let rowMap = Map()
     for (let i = 0; i < this.props.urlList.length; i++) {
@@ -47,17 +51,17 @@ class Viewer extends Component {
     setRowMap(rowMap);
   }
 
+  loadMoreImages = () => {
+    getMoreRandomImages(2, this.props.currentBreed, this.props.currentSubBreed)
+  }
+
   componentDidMount() {
-    fetch(`https://dog.ceo/api/breed/pug/images/random/10`)
-      .then((response) => response.json())
-      .then((result) =>
-        store.dispatch({ type: SET_URL_LIST, urlList: result.message })
-      );
-    window.addEventListener("resize", this.resize)
+    getRandomImages(10, this.props.currentBreed, this.props.currentSubBreed)
+    window.addEventListener("resize", this.reformat)
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.resize)
+    window.removeEventListener("resize", this.reformat)
   }
 
 
@@ -86,7 +90,6 @@ class Viewer extends Component {
   render() {
     let imageList = []
 
-
     for (let i = 0; i < this.props.urlList.length; i++) {
       let rowIndex = Math.floor(i / getMaxNumberOfImagesInRow());
       let height = 30;
@@ -100,13 +103,36 @@ class Viewer extends Component {
       if (this.props.rowMap.hasIn([rowIndex.toString(), "height"])) {
         height = this.props.rowMap.getIn([rowIndex.toString(), "height"])
       }
-      imageList.push(<img key={`image${i}`} id={`image${i}`} src={this.props.urlList[i]} style={{ height: `${height}vw`, padding: "0.2%" }} onLoad={(e) => this.addWidthToMap(e.target, rowIndex.toString(), i, height, numberOfImagesInRow)}
+      imageList.push(<img key={`image${i}`} id={`image${i}`} src={this.props.urlList[i]} style={{ height: `${height}vw`, padding: "0.2%" }} onLoad={(e) => this.reformat(e, true)}
       />)
     }
 
     return (
+
       <div className="flex-container">
-        {imageList}
+        <InfiniteScroll
+          dataLength={this.props.urlList.length} //This is important field to render the next data
+          next={this.loadMoreImages}
+          hasMore={this.props.hasMoreImages}
+          loader={<h4>Loading...</h4>}
+          endMessage={
+            <p style={{ textAlign: 'center' }}>
+              <b>Yay! You have seen it all</b>
+            </p>
+          }
+        // below props only if you need pull down functionality
+        // refreshFunction={this.refresh}
+        // pullDownToRefresh
+        // pullDownToRefreshThreshold={50}
+        // pullDownToRefreshContent={
+        //   <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
+        // }
+        // releaseToRefreshContent={
+        //   <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+        // }
+        >
+          {imageList}
+        </InfiniteScroll>
       </div>
     );
   }

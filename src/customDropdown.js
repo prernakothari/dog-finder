@@ -6,6 +6,7 @@ import store from "./store";
 import { SET_URL_LIST } from "./actionTypes";
 import { setRowMap } from "./viewer";
 import { Map as iMap } from "immutable"
+import { getRandomImages, getRandomImagesAPI } from "./apiHelper";
 
 String.prototype.CapitalizeEachWord = function () {
   let text = this.toLowerCase()
@@ -68,17 +69,7 @@ const CustomDropdown = (props) => {
   const onSelect = (eventKey) => {
     setRowMap(iMap())
     let breedData = mapIndexToBreedData.get(eventKey);
-    let api = `https://dog.ceo/api/breed/${breedData.breed}/${breedData.subBreed === null ? "" : `${breedData.subBreed}/`
-      }images`;
-    console.log(api);
-    fetch(api)
-      .then((response) => response.json())
-      .then((result) =>
-        store.dispatch({
-          type: SET_URL_LIST,
-          urlList: result.message,
-        })
-      );
+    getRandomImages(9, breedData.breed, breedData.subBreed)
   };
 
   let itemList = [];

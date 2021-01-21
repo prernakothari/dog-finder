@@ -12,17 +12,14 @@ import {
   FormControl,
   Button,
 } from "react-bootstrap";
+import { getListOfBreeds } from "./apiHelper";
 const mapStateToProps = (state) => {
   return {};
 };
 
 class ViewControl extends Component {
   componentDidMount() {
-    fetch(`https://dog.ceo/api/breeds/list/all`)
-      .then((response) => response.json())
-      .then((result) =>
-        store.dispatch({ type: SET_BREED_DATA, breedData: result.message })
-      );
+    getListOfBreeds()
   }
   render() {
     return (
