@@ -11,7 +11,7 @@ import { getMoreRandomImages, getRandomImages } from "./apiHelper";
 const mapStateToProps = (state) => {
   return {
     urlList: state.urlList.toJS(), rowMap: state.rowMap, currentBreed: state.activeBreedData.breed, currentSubBreed: state.activeBreedData.subBreed,
-    hasMoreImages: state.hasMoreImages, needsFormatting: state.needsFormatting
+    hasMoreImages: state.hasMoreImages
   };
 };
 
@@ -32,31 +32,41 @@ class Viewer extends Component {
     this.setState({ rowMap: Map() })
   }
 
-  reformat = (e, incremental = false) => {
+  reformat = (e, incremental = false, rowIndex_ = undefined, index_ = undefined, numberOfImagesInRow_ = undefined) => {
     e.preventDefault()
     let oldRowMap = this.props.rowMap
-    let rowMap = Map()
-    for (let i = 0; i < this.props.urlList.length; i++) {
-      let maxNumberOfImagesInRow = getMaxNumberOfImagesInRow()
-      let rowIndex = Math.floor(i / maxNumberOfImagesInRow);
+    let rowMap;
+    if (incremental) {
+      rowMap = oldRowMap
+      let indicesList = oldRowMap.getIn([rowIndex_, "indicesLoaded"], Set([])).add(index_)
+      rowMap = rowMap.delete(rowIndex_)
+      indicesList.forEach(i => {
+        rowMap = this.addWidthToMap(document.getElementById(`image${i}`), rowIndex_.toString(), i, numberOfImagesInRow_, rowMap)
+      })
+    } else {
+      rowMap = Map()
+      for (let i = 0; i < this.props.urlList.length; i++) {
+        let maxNumberOfImagesInRow = getMaxNumberOfImagesInRow()
+        let rowIndex = Math.floor(i / maxNumberOfImagesInRow);
 
-      let numberOfImagesInRow = maxNumberOfImagesInRow;
-      if (rowIndex === Math.floor((this.props.urlList.length - 1) / maxNumberOfImagesInRow)) {
-        numberOfImagesInRow = this.props.urlList.length - maxNumberOfImagesInRow * rowIndex
+        let numberOfImagesInRow = maxNumberOfImagesInRow;
+        if (rowIndex === Math.floor((this.props.urlList.length - 1) / maxNumberOfImagesInRow)) {
+          numberOfImagesInRow = this.props.urlList.length - maxNumberOfImagesInRow * rowIndex
+        }
+
+        rowMap = this.addWidthToMap(document.getElementById(`image${i}`), rowIndex.toString(), i, numberOfImagesInRow, rowMap)
       }
-
-      rowMap = this.addWidthToMap(document.getElementById(`image${i}`), rowIndex.toString(), i, oldRowMap.getIn([rowIndex, "height"]), numberOfImagesInRow, rowMap)
     }
 
     setRowMap(rowMap);
   }
 
   loadMoreImages = () => {
-    getMoreRandomImages(2, this.props.currentBreed, this.props.currentSubBreed)
+    getMoreRandomImages(10, this.props.currentBreed, this.props.currentSubBreed)
   }
 
   componentDidMount() {
-    getRandomImages(10, this.props.currentBreed, this.props.currentSubBreed)
+    getRandomImages(20, this.props.currentBreed, this.props.currentSubBreed)
     window.addEventListener("resize", this.reformat)
   }
 
@@ -65,7 +75,7 @@ class Viewer extends Component {
   }
 
 
-  addWidthToMap = (imageElement, rowIndex, index, height, numberOfImagesInRow, rowMapRef = undefined) => {
+  addWidthToMap = (imageElement, rowIndex, index, numberOfImagesInRow, rowMapRef = undefined) => {
     let rowMap = rowMapRef ? rowMapRef : this.props.rowMap
     if (!rowMap.has(rowIndex)) {
       rowMap = rowMap.set(rowIndex, { width: 0 })
@@ -103,7 +113,9 @@ class Viewer extends Component {
       if (this.props.rowMap.hasIn([rowIndex.toString(), "height"])) {
         height = this.props.rowMap.getIn([rowIndex.toString(), "height"])
       }
-      imageList.push(<img key={`image${i}`} id={`image${i}`} src={this.props.urlList[i]} style={{ height: `${height}vw`, padding: "0.2%" }} onLoad={(e) => this.reformat(e, true)}
+      imageList.push(<img key={`image${i}`} id={`image${i}`} src={this.props.urlList[i]}
+        style={{ height: `${height}vw`, padding: "0.2%" }}
+        onLoad={(e) => this.reformat(e, true, rowIndex.toString(), i, numberOfImagesInRow)}
       />)
     }
 
