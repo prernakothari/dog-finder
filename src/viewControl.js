@@ -28,14 +28,14 @@ class ViewControl extends Component {
     let title = `${this.props.subBreed ? this.props.subBreed + " " : ""}${this.props.breed ? this.props.breed : "All Breeds"}`.CapitalizeEachWord()
     return (
       <div>
-        <Navbar bg="light" expand="lg" >
+        <Navbar bg="light" expand="lg" collapseOnSelect = {true} >
           <Nav className="mr-auto">
             <Navbar.Brand href="#home">Dog Finder</Navbar.Brand>
           </Nav>
           <Nav className="mr-auto">
             <Navbar.Text size="lg"> {title} </Navbar.Text>
           </Nav>
-          <Nav>
+          <Nav> 
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <CustomDropdown />

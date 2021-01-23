@@ -7,6 +7,7 @@ import { setRowMap } from "./viewer";
 import { Map as iMap } from "immutable"
 import { getRandomImages, getRandomImagesAPI } from "./apiHelper";
 import { RANDOM_SAMPLE_SIZE } from "./constants";
+import "./customDropdown.css"
 
 String.prototype.CapitalizeEachWord = function () {
   let text = this.toLowerCase()
@@ -74,7 +75,7 @@ const CustomDropdown = (props) => {
     (child) =>
       !value || child.props.children.toLowerCase().includes(value.toLowerCase())
   )
-  if (itemList.length == 0) {
+  if (itemList.length === 0) {
     itemList.push(<NavDropdown.Item>No Results </NavDropdown.Item>)
   }
 
