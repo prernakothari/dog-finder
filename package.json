@@ -1,6 +1,6 @@
 {
   "name": "dog-finder",
-  "homepage": ".",
+  "homepage": "https://github.com/prernakothari/dog-finder",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

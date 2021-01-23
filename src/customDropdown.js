@@ -79,7 +79,7 @@ const CustomDropdown = (props) => {
   }
 
   return (
-    <NavDropdown title={"Select Breed"} setValue={setValue} value={value}>
+    <NavDropdown title={"Select Breed"} value={value}>
       <FormControl
         autoFocus
         className='mx-2 my-2 w-auto'
