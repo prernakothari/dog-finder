@@ -1,6 +1,6 @@
 # Dog Finder
 
-The web application is host at [https://prernakothari.github.io/dog-finder/](https://prernakothari.github.io/dog-finder/)
+The web application is hosted at [https://prernakothari.github.io/dog-finder/](https://prernakothari.github.io/dog-finder/)
 
 This application lets you surf through dog images provided by [http://dog.ceo/](http://dog.ceo/)
 
