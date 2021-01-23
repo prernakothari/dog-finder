@@ -7,7 +7,7 @@ import { SET_ROW_MAP } from "./actionTypes";
 import "./view.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { getMoreRandomImages, getRandomImages } from "./apiHelper";
-import { RANDOM_SAMPLE_SIZE } from "./constants";
+import { MAX_IMAGES_IN_ROW, MINIMUM_IMAGE_WIDTH_FACTOR, RANDOM_SAMPLE_SIZE } from "./constants";
 
 const mapStateToProps = (state) => {
   return {
@@ -25,7 +25,7 @@ const getDesiredWidth = () => {
 };
 
 const getMaxNumberOfImagesInRow = () => {
-  return Math.min(Math.floor(getDesiredWidth() / 200), 5);
+  return Math.min(Math.floor(getDesiredWidth() / MINIMUM_IMAGE_WIDTH_FACTOR), MAX_IMAGES_IN_ROW);
 };
 
 export const setRowMap = (rowMap) => {
