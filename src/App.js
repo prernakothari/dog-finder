@@ -1,12 +1,12 @@
-import './App.css';
-import Viewer from "./viewer"
-import ViewControl from "./viewControl"
+import "./App.css";
+import View from "./view";
+import ViewController from "./viewController";
 
 function App() {
   return (
-    <div className="App">
-      <ViewControl />
-      <Viewer />
+    <div className='App'>
+      <ViewController />
+      <View />
     </div>
   );
 }

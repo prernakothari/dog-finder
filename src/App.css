@@ -7,8 +7,8 @@
   pointer-events: none;
 }
 
-#githubLink{
-  background: url("./github.svg") center center no-repeat;
+#githubLink {
+  background: url("./img/github.svg") center center no-repeat;
 }
 
 @media (prefers-reduced-motion: no-preference) {

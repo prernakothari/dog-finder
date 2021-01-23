@@ -1,1 +1,1 @@
-export const RANDOM_SAMPLE_SIZE = 30
+export const RANDOM_SAMPLE_SIZE = 30;

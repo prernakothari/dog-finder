@@ -1,9 +1,9 @@
-import rootReducer from "./reducer"
+import rootReducer from "./reducer";
 import { createStore } from "redux";
 
 export default createStore(rootReducer);
 
-
+/*  To use redux dev tools, remove the following comments
 // import { createStore, applyMiddleware, compose } from "redux";
 // import thunk from "redux-thunk";
 
@@ -15,5 +15,6 @@ export default createStore(rootReducer);
 //     )
 // );
 
-
 // export default store;
+
+*/
