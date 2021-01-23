@@ -21,7 +21,10 @@ export const getMoreRandomImages = (number, breed, subBreed = null) => {
         .then((response) => response.json())
         .then((result) =>
             store.dispatch({ type: APPEND_URL_LIST, urlList: result.message })
-        );
+        )
+        .catch(error => {
+            console.log("Error:", error)
+        });
 }
 
 export const getRandomImages = (number, breed, subBreed = null) => {
@@ -29,7 +32,10 @@ export const getRandomImages = (number, breed, subBreed = null) => {
         .then((response) => response.json())
         .then((result) =>
             store.dispatch({ type: SET_URL_LIST, urlList: result.message })
-        );
+        )
+        .catch(error => {
+            console.log("Error:", error)
+        });
 }
 
 export const getListOfBreeds = () => {
@@ -37,5 +43,8 @@ export const getListOfBreeds = () => {
         .then((response) => response.json())
         .then((result) =>
             store.dispatch({ type: SET_BREED_DATA, breedData: result.message })
-        );
+        )
+        .catch(error => {
+            console.log("Error:", error)
+        });
 }

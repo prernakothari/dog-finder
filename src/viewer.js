@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { Modal } from "react-bootstrap"
 import { Component } from "react";
 import { connect } from "react-redux";
 import { Map, Set } from "immutable";
@@ -29,8 +30,12 @@ export const setRowMap = (rowMap) => {
 }
 
 class Viewer extends Component {
-  reset = () => {
-    this.setState({ rowMap: Map() })
+  constructor(props) {
+    super(props)
+    this.state = {
+      showImageModal: false,
+      selectedImageId: null,
+    }
   }
 
   reformat = (e, incremental = false, rowIndex_ = undefined, index_ = undefined, numberOfImagesInRow_ = undefined) => {
@@ -99,6 +104,8 @@ class Viewer extends Component {
   }
 
   render() {
+    const handleClose = () => this.setState({ showImageModal: false });
+    const handleShow = () => this.setState({ showImageModal: true });
     let imageList = []
 
     for (let i = 0; i < this.props.urlList.length; i++) {
@@ -115,27 +122,39 @@ class Viewer extends Component {
         height = this.props.rowMap.getIn([rowIndex.toString(), "height"])
       }
       imageList.push(<img key={`image${i}`} id={`image${i}`} src={this.props.urlList[i]}
+        onClick={() => {
+          this.setState({ selectedImageId: i });
+          handleShow();
+        }}
         style={{ height: `${height}vw`, padding: "0.2%" }}
         onLoad={(e) => this.reformat(e, true, rowIndex.toString(), i, numberOfImagesInRow)}
       />)
     }
 
     return (
-
-      <div className="flex-container">
-        <InfiniteScroll
-          dataLength={this.props.urlList.length} //This is important field to render the next data
-          next={this.loadMoreImages}
-          hasMore={this.props.hasMoreImages}
-          loader={<h4>Loading...</h4>}
-          endMessage={
-            <p style={{ textAlign: 'center' }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          }
-        >
-          {imageList}
-        </InfiniteScroll>
+      <div>
+        <div className="flex-container">
+          <InfiniteScroll
+            dataLength={this.props.urlList.length} //This is important field to render the next data
+            next={this.loadMoreImages}
+            hasMore={this.props.hasMoreImages}
+            loader={<h4>Loading...</h4>}
+            endMessage={
+              <p style={{ textAlign: 'center' }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }
+          >
+            {imageList}
+          </InfiniteScroll>
+        </div>
+        <Modal show={this.state.showImageModal} onHide={handleClose}>
+          <Modal.Header closeButton>
+          </Modal.Header>
+          <Modal.Body><img src={this.props.urlList[this.state.selectedImageId]} style={{ width: "100%" }} /></Modal.Body>
+          <Modal.Footer>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }
