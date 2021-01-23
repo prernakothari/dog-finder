@@ -1,4 +1,4 @@
-import { SET_URL_LIST, SET_BREED_DATA, SET_ROW_MAP, APPEND_URL_LIST } from "./actionTypes"
+import { SET_URL_LIST, SET_BREED_DATA, SET_ROW_MAP, APPEND_URL_LIST, SET_CURRENT_BREED } from "./actionTypes"
 
 import { OrderedSet, Map } from "immutable"
 
@@ -19,6 +19,9 @@ export default function Reducer(state = initialState, action) {
         }
         case SET_ROW_MAP: {
             return { ...state, rowMap: action.rowMap }
+        }
+        case SET_CURRENT_BREED: {
+            return { ...state, activeBreedData: { breed: action.breed, subBreed: action.subBreed } }
         }
     }
 

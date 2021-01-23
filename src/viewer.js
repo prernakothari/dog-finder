@@ -7,16 +7,17 @@ import { SET_ROW_MAP } from "./actionTypes";
 import "./viewer.css"
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getMoreRandomImages, getRandomImages } from "./apiHelper";
+import { RANDOM_SAMPLE_SIZE } from "./constants";
 
 const mapStateToProps = (state) => {
   return {
     urlList: state.urlList.toJS(), rowMap: state.rowMap, currentBreed: state.activeBreedData.breed, currentSubBreed: state.activeBreedData.subBreed,
-    hasMoreImages: state.hasMoreImages
+    hasMoreImages: state.hasMoreImages, reformatting: state.reformatting
   };
 };
 
 const getDesiredWidth = () => {
-  return window.innerWidth * 0.95
+  return window.innerWidth * 0.985
 }
 
 const getMaxNumberOfImagesInRow = () => {
@@ -62,11 +63,11 @@ class Viewer extends Component {
   }
 
   loadMoreImages = () => {
-    getMoreRandomImages(10, this.props.currentBreed, this.props.currentSubBreed)
+    getMoreRandomImages(RANDOM_SAMPLE_SIZE, this.props.currentBreed, this.props.currentSubBreed)
   }
 
   componentDidMount() {
-    getRandomImages(20, this.props.currentBreed, this.props.currentSubBreed)
+    getRandomImages(RANDOM_SAMPLE_SIZE, this.props.currentBreed, this.props.currentSubBreed)
     window.addEventListener("resize", this.reformat)
   }
 
@@ -132,16 +133,6 @@ class Viewer extends Component {
               <b>Yay! You have seen it all</b>
             </p>
           }
-        // below props only if you need pull down functionality
-        // refreshFunction={this.refresh}
-        // pullDownToRefresh
-        // pullDownToRefreshThreshold={50}
-        // pullDownToRefreshContent={
-        //   <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
-        // }
-        // releaseToRefreshContent={
-        //   <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
-        // }
         >
           {imageList}
         </InfiniteScroll>

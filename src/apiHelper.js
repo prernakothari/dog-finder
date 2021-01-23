@@ -6,7 +6,10 @@ const getAllImagesAPI = (breed, subBreed = null) => {
 }
 
 const getRandomImagesAPI = (number, breed, subBreed = null) => {
-    return `https://dog.ceo/api/breed/${breed}/${subBreed === null ? "" : `${subBreed}/`}images/random/${number}`
+    if (breed !== null)
+        return `https://dog.ceo/api/breed/${breed}/${subBreed === null ? "" : `${subBreed}/`}images/random/${number}`
+    else
+        return `https://dog.ceo/api/breeds/image/random/${number}`
 }
 
 const getListOfBreedsAPI = () => {
