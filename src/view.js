@@ -190,7 +190,7 @@ class View extends Component {
             this.setState({ selectedImageId: i });
             handleShow();
           }}
-          style={{ height: `${height}vw`, padding: "0.2%" }}
+          style={{ height: `${height}vw`, padding: "0.2%", cursor: "pointer" }}
           onLoad={(e) =>
             this.reformat(e, true, rowIndex.toString(), i, numberOfImagesInRow)
           }
