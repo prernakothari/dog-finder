@@ -1,8 +1,8 @@
 # Dog Finder
 
-Visit [https://prernakothari.github.io/dog-finder/](https://prernakothari.github.io/dog-finder/)
+The web application is host at [https://prernakothari.github.io/dog-finder/](https://prernakothari.github.io/dog-finder/)
 
-This web application lets you surf through dog images provided by [http://dog.ceo/](http://dog.ceo/)
+This application lets you surf through dog images provided by [http://dog.ceo/](http://dog.ceo/)
 
 An algorithm for displaying photos into a Photo Gallery is developed from scratch.   
 
